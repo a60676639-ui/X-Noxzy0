@@ -1,0 +1,1883 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>X - NOXZY Security Toolkit v4.0</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        darkbg: '#07090e',
+                        cardbg: '#0f1420',
+                        accent: '#06b6d4',
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #07090e; color: #f8fafc; }
+        .font-mono { font-family: 'JetBrains Mono', monospace; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #0b0f19; }
+        ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #06b6d4; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between selection:bg-cyan-500 selection:text-white">
+
+    <!-- BIOMETRIC FINGERPRINT VERIFICATION GATE -->
+    <div id="biometric-modal" class="fixed inset-0 z-50 bg-[#07090e] flex flex-col items-center justify-between p-6 select-none">
+        <div class="w-full max-w-md flex items-center justify-between">
+            <button onclick="handleBiometricCancel()" class="w-10 h-10 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-center text-slate-400 hover:text-white transition-all">
+                <i class="fa-solid fa-arrow-left"></i>
+            </button>
+            <div class="flex items-center space-x-1.5 bg-cyan-950/40 border border-cyan-500/30 px-3 py-1.5 rounded-full text-cyan-400 font-mono text-xs tracking-wider">
+                <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
+                <span>BIOMETRIC GATE V4.0</span>
+            </div>
+        </div>
+
+        <div class="flex flex-col items-center justify-center text-center space-y-6 my-auto w-full max-w-md">
+            <div>
+                <h2 class="text-xl md:text-2xl font-bold tracking-widest text-cyan-100 uppercase">VERIFIKASI SIDIK JARI</h2>
+                <div class="flex items-center justify-center space-x-2 mt-2">
+                    <span class="w-8 h-0.5 bg-indigo-500"></span>
+                    <span class="w-1.5 h-1.5 rounded-full bg-cyan-400"></span>
+                    <span class="w-8 h-0.5 bg-cyan-500"></span>
+                </div>
+            </div>
+
+            <p class="text-xs font-mono text-slate-400">Tekan & tahan sampai 100% untuk masuk ke Toolkit</p>
+
+            <div class="relative w-56 h-56 flex items-center justify-center my-4">
+                <svg class="absolute inset-0 w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+                    <circle cx="50" cy="50" r="44" stroke="rgba(30, 41, 59, 0.6)" stroke-width="2.5" fill="none"></circle>
+                    <circle id="biometric-progress-ring" cx="50" cy="50" r="44" stroke="url(#biometric-gradient)" stroke-width="3" stroke-linecap="round" fill="none" stroke-dasharray="276" stroke-dashoffset="276" class="transition-all duration-75"></circle>
+                    <defs>
+                        <linearGradient id="biometric-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#06b6d4"></stop>
+                            <stop offset="50%" stop-color="#3b82f6"></stop>
+                            <stop offset="100%" stop-color="#8b5cf6"></stop>
+                        </linearGradient>
+                    </defs>
+                </svg>
+
+                <div id="fingerprint-scan-btn" class="w-40 h-40 rounded-full bg-slate-900/90 border border-cyan-500/30 flex flex-col items-center justify-center cursor-pointer shadow-2xl shadow-cyan-500/10 group relative">
+                    <div class="absolute inset-0 bg-cyan-500/5 rounded-full group-hover:bg-cyan-500/10 transition-all"></div>
+                    <i class="fa-solid fa-fingerprint text-5xl text-cyan-400 group-hover:scale-110 transition-transform mb-2"></i>
+                    <div id="biometric-percentage-text" class="font-mono text-xs font-bold text-cyan-300">0%</div>
+                </div>
+            </div>
+
+            <button id="hold-action-btn" class="w-full max-w-xs bg-slate-900/80 hover:bg-slate-900 border border-slate-800 text-slate-200 font-mono text-xs tracking-wider py-3 rounded-xl transition-all shadow-lg">
+                SENTUH & TAHAN
+            </button>
+
+            <div class="flex items-center space-x-3 pt-2">
+                <div class="bg-slate-900 border border-slate-800 px-3 py-1 rounded-lg text-[10px] font-mono text-slate-400 flex items-center space-x-1.5">
+                    <i class="fa-solid fa-shield text-cyan-400"></i>
+                    <span>AES-256 SECURE</span>
+                </div>
+                <div class="bg-slate-900 border border-slate-800 px-3 py-1 rounded-lg text-[10px] font-mono text-slate-400 flex items-center space-x-1.5">
+                    <i class="fa-solid fa-circle-check text-emerald-400"></i>
+                    <span>VERIFIED</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="w-full max-w-md pb-2">
+            <button onclick="handleBiometricCancel()" class="w-full bg-slate-900/60 hover:bg-slate-900 border border-slate-800 text-slate-300 font-mono text-xs py-3 rounded-xl transition-all tracking-wider">
+                X BATAL
+            </button>
+        </div>
+    </div>
+
+    <!-- AUTHENTICATION MODAL GATE -->
+    <div id="auth-modal" class="hidden fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-4">
+        <div class="bg-cardbg border border-cyan-500/30 w-full max-w-md rounded-2xl p-6 shadow-2xl shadow-cyan-950/50">
+            <div class="text-center mb-6">
+                <div class="w-16 h-16 bg-cyan-500/10 border border-cyan-500/40 rounded-2xl flex items-center justify-center mx-auto mb-3 text-cyan-400 text-2xl shadow-lg shadow-cyan-500/20">
+                    <i class="fa-solid fa-shield-halved"></i>
+                </div>
+                <h1 class="text-2xl font-bold tracking-wider text-white">X - NOXZY</h1>
+                <p class="text-xs text-cyan-400 font-mono mt-1">SECURITY TOOLKIT & EXPLOIT SUITE V4.0</p>
+            </div>
+
+            <div id="login-form-container" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-mono text-slate-400 mb-1.5 uppercase">Operator Username</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-500"><i class="fa-solid fa-user"></i></span>
+                        <input type="text" id="login-username" placeholder="Masukkan username..." class="w-full bg-darkbg border border-slate-800 rounded-xl pl-10 pr-4 py-3 text-sm text-white focus:outline-none focus:border-cyan-500 font-mono transition-all">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-mono text-slate-400 mb-1.5 uppercase">Security Password</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-500"><i class="fa-solid fa-lock"></i></span>
+                        <input type="password" id="login-password" placeholder="Masukkan password..." class="w-full bg-darkbg border border-slate-800 rounded-xl pl-10 pr-4 py-3 text-sm text-white focus:outline-none focus:border-cyan-500 font-mono transition-all">
+                    </div>
+                </div>
+                <button onclick="handleLogin()" class="w-full bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-semibold py-3 rounded-xl transition-all shadow-lg shadow-cyan-600/30 flex items-center justify-center space-x-2 text-sm mt-2">
+                    <i class="fa-solid fa-right-to-bracket"></i>
+                    <span>AUTHENTICATE SESSION</span>
+                </button>
+                <div class="flex items-center justify-center text-xs pt-2">
+                    <button onclick="handleForgotPassword()" class="text-cyan-400 hover:underline">Lupa Sandi?</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN APPLICATION CONTAINER -->
+    <div id="main-app-container" class="hidden flex-1 flex flex-col overflow-y-auto">
+        <!-- TOP NAVIGATION BAR -->
+        <header class="bg-cardbg border-b border-slate-800 sticky top-0 z-40 px-4 py-3">
+            <div class="max-w-7xl mx-auto flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-gradient-to-tr from-cyan-500 to-blue-600 rounded-xl flex items-center justify-center text-white shadow-md shadow-cyan-500/20 font-bold">
+                        NX
+                    </div>
+                    <div>
+                        <h1 class="text-base font-bold tracking-wide text-white">X - NOXZY</h1>
+                        <p class="text-[10px] text-cyan-400 font-mono">SECURITY TOOLKIT & EXPLOIT SUITE V4.0</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <div class="hidden sm:flex items-center space-x-2 bg-darkbg border border-slate-800 px-3 py-1.5 rounded-xl font-mono text-xs text-slate-300">
+                        <i class="fa-solid fa-clock text-cyan-400"></i>
+                        <span id="live-clock">00:00:00 WIB</span>
+                    </div>
+                    <button onclick="lockSystem()" class="bg-red-500/10 border border-red-500/30 hover:bg-red-500/20 text-red-400 p-2 rounded-xl text-xs transition-all flex items-center space-x-1.5 px-3">
+                        <i class="fa-solid fa-lock"></i>
+                        <span class="hidden sm:inline">Lock</span>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- DASHBOARD BODY CONTENT -->
+        <main class="flex-1 max-w-7xl w-full mx-auto p-4 md:p-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
+            
+            <!-- LEFT COLUMN: PROFILE, TOP UP & TRADING MODULE -->
+            <div class="space-y-6">
+                <!-- OPERATOR PROFILE CARD -->
+                <div class="bg-cardbg border-2 border-cyan-400 shadow-[0_0_15px_rgba(6,182,212,0.3)] rounded-2xl p-5 shadow-xl relative overflow-hidden">
+                    <div class="absolute inset-0 bg-cover bg-center z-0 opacity-45 pointer-events-none" style="background-image: url('https://images.unsplash.com/photo-1578632767115-351597cf2477?q=80&w=1000&auto=format&fit=crop');"></div>
+                    <div class="absolute inset-0 bg-gradient-to-t from-[#0f1420]/90 via-[#0f1420]/50 to-transparent z-0 pointer-events-none"></div>
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-cyan-500/10 rounded-full blur-2xl pointer-events-none z-0"></div>
+                    
+                    <div class="relative z-10">
+                        <div class="flex items-center space-x-4 mb-4">
+                            <div class="relative group cursor-pointer" onclick="document.getElementById('avatar-file-input').click()">
+                                <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-cyan-500 to-blue-600 p-0.5 flex items-center justify-center overflow-hidden shadow-lg shadow-cyan-500/20">
+                                    <img id="profile-avatar-img" src="" alt="Avatar" class="w-full h-full object-cover rounded-2xl hidden">
+                                    <span id="profile-avatar-text" class="text-white font-bold text-lg">NX</span>
+                                </div>
+                                <div class="absolute inset-0 bg-black/40 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white text-xs">
+                                    <i class="fa-solid fa-camera"></i>
+                                </div>
+                            </div>
+                            <input type="file" id="avatar-file-input" class="hidden" accept="image/*" onchange="handleAvatarUpload(event)">
+                            <div class="flex-1 min-w-0">
+                                <div class="flex items-center space-x-2">
+                                    <h3 id="profile-username-text" class="text-lg font-bold text-white truncate">Noxzy</h3>
+                                    <i id="god-mode-blue-check" class="fa-solid fa-circle-check text-cyan-400 text-sm hidden" title="Verified Elite Status"></i>
+                                    <button onclick="editProfileName()" class="text-slate-400 hover:text-cyan-400 text-xs"><i class="fa-solid fa-pen"></i></button>
+                                </div>
+                                <p id="profile-role-text" class="text-xs font-mono text-cyan-400 mt-0.5">GOD MODE</p>
+                                <div class="flex items-center space-x-1 mt-1 text-[10px] text-emerald-400 font-mono">
+                                    <span id="profile-verified-badge"><i class="fa-solid fa-shield-check"></i> Verified Root</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- WALLET BALANCE -->
+                        <div class="bg-darkbg border border-slate-800 rounded-xl p-3.5 mb-4 flex items-center justify-between">
+                            <div>
+                                <div class="text-[10px] font-mono text-slate-400 uppercase tracking-wider">Saldo Operator</div>
+                                <div id="profile-balance-text" class="text-lg font-bold font-mono text-emerald-400 mt-0.5">Rp 100.000</div>
+                            </div>
+                            <div class="w-10 h-10 bg-emerald-500/10 border border-emerald-500/30 rounded-xl flex items-center justify-center text-emerald-400">
+                                <i class="fa-solid fa-wallet"></i>
+                            </div>
+                        </div>
+
+                        <!-- PROFILE QUICK ACTIONS -->
+                        <div class="grid grid-cols-2 gap-2 text-xs">
+                            <button onclick="changePassword()" class="bg-slate-800/80 hover:bg-slate-800 text-slate-200 py-2.5 px-3 rounded-xl transition-all border border-slate-700/50 flex items-center justify-center space-x-1.5">
+                                <i class="fa-solid fa-key text-cyan-400"></i>
+                               <span>Ganti Sandi</span>
+                            </button>
+                            <button onclick="logoutAccount()" class="bg-red-500/10 hover:bg-red-500/20 text-red-400 py-2.5 px-3 rounded-xl transition-all border border-red-500/30 flex items-center justify-center space-x-1.5">
+                                <i class="fa-solid fa-right-from-bracket"></i>
+                                <span>Log Out</span>
+                            </button>
+                        </div>
+                        <div class="mt-2">
+                            <button onclick="addNewAccountModal()" class="w-full bg-cyan-600/20 hover:bg-cyan-600/30 text-cyan-400 py-2.5 px-3 rounded-xl transition-all border border-cyan-500/40 flex items-center justify-center space-x-1.5 text-xs font-semibold">
+                                <i class="fa-solid fa-user-plus"></i>
+                                <span>Tambah Akun & Role Baru (Root)</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TOP UP SALDO MODULE -->
+                <div class="bg-cardbg border-2 border-cyan-400 shadow-[0_0_15px_rgba(6,182,212,0.3)] rounded-2xl p-5 shadow-xl">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-sm font-bold text-white flex items-center space-x-2">
+                            <i class="fa-solid fa-circle-plus text-cyan-400"></i>
+                            <span>TOP UP SALDO OPERATOR</span>
+                        </h3>
+                    </div>
+                    <div class="space-y-3">
+                        <div>
+                            <label class="block text-xs font-mono text-slate-400 mb-1">Nominal Top Up (Rp)</label>
+                            <input type="number" id="topup-amount" value="50000" class="w-full bg-darkbg border border-slate-800 rounded-xl px-3 py-2.5 text-sm text-white font-mono focus:outline-none focus:border-cyan-500">
+                        </div>
+                        <div class="grid grid-cols-3 gap-2">
+                            <button onclick="setTopUpAmount(50000)" class="bg-darkbg hover:bg-slate-800 border border-slate-800 text-xs py-1.5 rounded-lg text-slate-300 font-mono">50K</button>
+                            <button onclick="setTopUpAmount(100000)" class="bg-darkbg hover:bg-slate-800 border border-slate-800 text-xs py-1.5 rounded-lg text-slate-300 font-mono">100K</button>
+                            <button onclick="setTopUpAmount(500000)" class="bg-darkbg hover:bg-slate-800 border border-slate-800 text-xs py-1.5 rounded-lg text-slate-300 font-mono">500K</button>
+                        </div>
+                        <button onclick="executeTopUp()" class="w-full bg-cyan-600 hover:bg-cyan-500 text-white font-semibold py-2.5 rounded-xl text-xs transition-all shadow-lg shadow-cyan-600/30 flex items-center justify-center space-x-1.5">
+                            <i class="fa-solid fa-bolt"></i>
+                            <span>PROSES TOP UP SEKARANG</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- CRYPTO & FOREX TRADING MODULE -->
+                <div class="bg-cardbg border-2 border-cyan-400 shadow-[0_0_15px_rgba(6,182,212,0.3)] rounded-2xl p-5 shadow-xl">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-sm font-bold text-white flex items-center space-x-2">
+                            <i class="fa-solid fa-chart-line text-cyan-400"></i>
+                            <span>SIMULATOR TRADING LIVE</span>
+                        </h3>
+                        <span id="chart-live-price" class="font-mono text-xs text-emerald-400 font-bold">$65,420.00</span>
+                    </div>
+
+                    <div class="space-y-3 mb-4">
+                        <div id="god-mode-trading-panel" class="bg-darkbg border border-cyan-500/40 rounded-xl p-3 hidden">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-[10px] font-mono text-cyan-400 font-bold uppercase flex items-center space-x-1.5">
+                                    <i class="fa-solid fa-crown text-amber-400"></i>
+                                    <span>Elite Auto Win Control</span>
+                                </span>
+                                <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
+                            </div>
+                            <div class="grid grid-cols-2 gap-2 text-xs">
+                                <label class="flex items-center space-x-2 bg-slate-900/80 p-2 rounded-lg cursor-pointer border border-slate-800">
+                                    <input type="checkbox" id="auto-win-toggle" class="rounded bg-darkbg border-slate-700 text-cyan-500 focus:ring-0">
+                                    <span class="text-[11px] font-mono text-slate-200">Force 100% Win</span>
+                                </label>
+                                <select id="auto-win-multiplier" class="bg-slate-900 border border-slate-800 rounded-lg px-2 py-1 text-[11px] text-cyan-400 font-mono focus:outline-none focus:border-cyan-500">
+                                    <option value="1.0">Profit 100% (2x)</option>
+                                    <option value="2.0">Profit 200% (3x)</option>
+                                    <option value="5.0">Profit 500% (6x)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="block text-[10px] font-mono text-slate-400 mb-1">ASET PASAR</label>
+                                <select id="trade-asset" class="w-full bg-darkbg border border-slate-800 rounded-xl px-2.5 py-2 text-xs text-white font-mono focus:outline-none focus:border-cyan-500">
+                                    <option value="BTC">BTC/USD (Bitcoin)</option>
+                                    <option value="ETH">ETH/USD (Ethereum)</option>
+                                    <option value="XAU">XAU/USD (Gold)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-mono text-slate-400 mb-1">NOMINAL TARUHAN (IDR)</label>
+                                <input type="number" id="trade-amount" value="10000" class="w-full bg-darkbg border border-slate-800 rounded-xl px-2.5 py-2 text-xs text-white font-mono focus:outline-none focus:border-cyan-500">
+                            </div>
+                        </div>
+
+                        <div class="bg-darkbg border border-slate-800 rounded-xl p-2 relative h-36">
+                            <div class="absolute top-2 left-3 text-[10px] font-mono text-cyan-400" id="chart-asset-label">BTC</div>
+                            <canvas id="trading-chart-canvas" class="w-full h-full"></canvas>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-2 pt-1">
+                            <button onclick="executeTrade('BUY / LONG')" class="bg-emerald-600 hover:bg-emerald-500 text-white font-semibold py-2.5 rounded-xl text-xs transition-all shadow-lg shadow-emerald-600/30 flex items-center justify-center space-x-1">
+                                <i class="fa-solid fa-arrow-trend-up"></i>
+                                <span>BUY (LONG)</span>
+                            </button>
+                            <button onclick="executeTrade('SELL / SHORT')" class="bg-red-600 hover:bg-red-500 text-white font-semibold py-2.5 rounded-xl text-xs transition-all shadow-lg shadow-red-600/30 flex items-center justify-center space-x-1">
+                                <i class="fa-solid fa-arrow-trend-down"></i>
+                                <span>SELL (SHORT)</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- WHATSAPP BLAST MODULE -->
+                <div class="bg-cardbg border-2 border-cyan-400 shadow-[0_0_15px_rgba(6,182,212,0.3)] rounded-2xl p-5 shadow-xl">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-sm font-bold text-white flex items-center space-x-2">
+                            <i class="fa-brands fa-whatsapp text-emerald-400"></i>
+                            <span>WHATSAPP BLAST (MASS MESSAGE)</span>
+                        </h3>
+                        <span class="text-[9px] font-mono bg-emerald-500/10 text-emerald-400 px-2 py-0.5 rounded border border-emerald-500/30">BULK SENDER</span>
+                    </div>
+
+                    <div class="space-y-3">
+                        <div class="bg-darkbg border border-slate-800 rounded-xl p-3 flex flex-col space-y-2">
+                            <div class="flex items-center justify-between text-xs font-mono">
+                                <span class="text-cyan-400 font-bold"><i class="fa-solid fa-coins text-amber-400"></i> Reward: Rp 155.000 / Chat</span>
+                                <span class="text-[10px] text-slate-400" id="god-mode-bonus-label">Elite Boost: Active</span>
+                            </div>
+                            <div class="grid grid-cols-2 gap-2 pt-1 border-t border-slate-800/80">
+                                <div class="bg-slate-900/60 p-2 rounded-lg text-center">
+                                    <div class="text-[9px] font-mono text-slate-400 uppercase">Pesan Masuk (Success)</div>
+                                    <div id="blast-success-count" class="text-sm font-bold font-mono text-emerald-400">0</div>
+                                </div>
+                                <div class="bg-slate-900/60 p-2 rounded-lg text-center">
+                                    <div class="text-[9px] font-mono text-slate-400 uppercase">Pesan Gagal (Failed)</div>
+                                    <div id="blast-failed-count" class="text-sm font-bold font-mono text-red-400">0</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-[10px] font-mono text-slate-400 mb-1">DAFTAR NOMOR TARGET (Pisahkan koma/baris baru)</label>
+                            <textarea id="blast-numbers" rows="3" class="w-full bg-darkbg border border-slate-800 rounded-xl p-2.5 text-xs text-white font-mono focus:outline-none focus:border-cyan-500 resize-none">6281234567890, 6289876543210</textarea>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-mono text-slate-400 mb-1">PESAN YANG DIKIRIM (BROADCAST)</label>
+                            <textarea id="blast-message" rows="2" class="w-full bg-darkbg border border-slate-800 rounded-xl p-2.5 text-xs text-white font-mono focus:outline-none focus:border-cyan-500 resize-none">[X-NOXZY] Peringatan sistem keamanan aktif.</textarea>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2">
+                            <button onclick="startWhatsAppBlast()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-semibold py-2.5 rounded-xl text-xs transition-all shadow-lg shadow-emerald-600/30 flex items-center justify-center space-x-1.5">
+                                <i class="fa-solid fa-play"></i>
+                                <span>MULAI BLAST</span>
+                            </button>
+                            <button onclick="stopWhatsAppBlast()" class="bg-red-600 hover:bg-red-500 text-white font-semibold py-2.5 rounded-xl text-xs transition-all shadow-lg shadow-red-600/30 flex items-center justify-center space-x-1.5">
+                                <i class="fa-solid fa-stop"></i>
+                                <span>BERHENTI BLAST</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PRICING & ROLE UPGRADE -->
+                <div class="bg-cardbg border-2 border-cyan-400 shadow-[0_0_15px_rgba(6,182,212,0.3)] rounded-2xl p-5 shadow-xl">
+                    <h3 class="text-sm font-bold text-white mb-3 flex items-center space-x-2">
+                        <i class="fa-solid fa-crown text-amber-400"></i>
+                        <span>UPGRADE OPERATOR LEVEL</span>
+                    </h3>
+                    <div class="space-y-3">
+                        <div class="bg-darkbg border border-slate-800 rounded-xl p-3 flex items-center justify-between text-xs">
+                            <div>
+                                <div class="text-white font-bold">LEVEL 100 - MEMBER</div>
+                                <div class="text-[10px] text-slate-400">Akses Dasar Toolkit</div>
+                            </div>
+                            <span class="text-emerald-400 font-mono font-bold">GRATIS</span>
+                        </div>
+                        <div class="bg-darkbg border border-slate-800 rounded-xl p-3 flex items-center justify-between text-xs">
+                            <div>
+                                <div class="text-white font-bold">CYBER ELITE</div>
+                                <div class="text-[10px] text-cyan-400">Akses Eksploitasi Menengah</div>
+                            </div>
+                            <span class="text-cyan-400 font-mono font-bold">Rp 2.500.000</span>
+                        </div>
+                        <div class="bg-darkbg border border-slate-800 rounded-xl p-3 flex items-center justify-between text-xs">
+                            <div>
+                                <div class="text-white font-bold">SHADOW OPERATIVE</div>
+                                <div class="text-[10px] text-indigo-400">Akses VCard & Bug Advance</div>
+                            </div>
+                            <span class="text-indigo-400 font-mono font-bold">Rp 5.000.000</span>
+                        </div>
+                        <div class="bg-darkbg border border-slate-800 rounded-xl p-3 flex items-center justify-between text-xs">
+                            <div>
+                                <div class="text-white font-bold">SYSTEM ARCHITECT / GOD MODE</div>
+                                <div class="text-[10px] text-amber-400">Akses Penuh Seluruh Fitur Root</div>
+                            </div>
+                            <span class="text-amber-400 font-mono font-bold">Rp 10.000.000</span>
+                        </div>
+                        <button onclick="openUpgradeModal()" class="w-full bg-slate-800 hover:bg-slate-700 text-cyan-400 font-semibold py-2.5 rounded-xl text-xs transition-all border border-cyan-500/30">
+                            PILIH & UPGRADE ROLE
+                        </button>
+                    </div>
+                </div>
+
+                <!-- DEVELOPER MANAGEMENT (ROOT ONLY) -->
+                <div id="dev-management-card" class="bg-cardbg border-2 border-cyan-400 shadow-[0_0_15px_rgba(6,182,212,0.3)] rounded-2xl p-5 shadow-xl hidden">
+                    <h3 class="text-sm font-bold text-white mb-3 flex items-center space-x-2">
+                        <i class="fa-solid fa-user-gear text-cyan-400"></i>
+                        <span>DEVELOPER & OPERATOR MANAGEMENT</span>
+                    </h3>
+                    <div id="dev-accounts-list" class="space-y-2">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+
+                <!-- LIVE CONSOLE TERMINAL LOGS -->
+                <div class="bg-cardbg border-2 border-cyan-400 shadow-[0_0_15px_rgba(6,182,212,0.3)] rounded-2xl p-5 shadow-xl">
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="flex items-center space-x-2">
+                            <i class="fa-solid fa-terminal text-cyan-400"></i>
+                            <h3 class="text-xs font-bold font-mono text-white">LIVE TERMINAL LOGS</h3>
+                        </div>
+                        <button onclick="clearLogs()" class="text-[10px] font-mono text-slate-400 hover:text-white bg-slate-800 px-2 py-1 rounded">CLEAR</button>
+                    </div>
+                    <div id="logs-container" class="bg-darkbg border border-slate-800 rounded-xl p-3.5 h-48 overflow-y-auto font-mono text-xs text-slate-300 space-y-1.5 shadow-inner">
+                        <div class="text-slate-500">[SYSTEM] Terminal initialized. Awaiting operator action...</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RIGHT 2 COLUMNS: ATTACK & EXPLOIT MODULES -->
+            <div class="lg:col-span-2 space-y-6">
+                
+                <!-- WHATSAPP ATTACK & EXPLOIT SUITE -->
+                <div class="bg-cardbg border-2 border-cyan-400 shadow-[0_0_15px_rgba(6,182,212,0.3)] rounded-2xl p-5 shadow-xl">
+                    <div class="flex items-center justify-between mb-4 pb-3 border-b border-slate-800">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-9 h-9 bg-cyan-500/10 border border-cyan-500/30 rounded-xl flex items-center justify-center text-cyan-400">
+                                <i class="fa-brands fa-whatsapp text-lg"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-sm font-bold text-white">WHATSAPP EXPLOIT & ATTACK SUITE (ADVANCED V4.0)</h3>
+                                <p class="text-[10px] text-slate-400">Modul serangan target spesifik dan kenon WhatsApp terbaru</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="space-y-3">
+                        <!-- MENU BARU: BADAK WA EXPLOIT SUITE -->
+                        <div class="bg-darkbg border-2 border-cyan-500 shadow-[0_0_15px_rgba(6,182,212,0.4)] rounded-xl overflow-hidden">
+                            <button onclick="toggleMenu('badak-wa-content', 'badak-wa-icon')" class="w-full p-4 flex items-center justify-between text-left hover:bg-slate-900/50 transition-all bg-cyan-950/30">
+                                <span class="text-xs font-bold text-cyan-300 flex items-center space-x-2">
+                                    <i class="fa-solid fa-shield-cat text-cyan-400 text-base"></i>
+                                    <span>BADAK WA EXPLOIT & OVERFLOW SUITE (NEW)</span>
+                                </span>
+                                <i id="badak-wa-icon" class="fa-solid fa-chevron-down text-xs text-cyan-400 transition-transform duration-300"></i>
+                            </button>
+                            <div id="badak-wa-content" class="hidden p-4 pt-0 space-y-4 border-t border-slate-800/80 mt-2">
+                                <p class="text-[11px] text-cyan-200/80 mt-2">Modul Badak WA tingkat lanjut untuk bypass enkripsi end-to-end, injeksi payload memori penuh, dan crash force-close target instan.</p>
+                                <div class="space-y-2.5">
+                                    <input type="text" id="target-badak-phone" placeholder="No Target Badak WA (cth: 628123456789)" class="w-full bg-slate-900 border border-cyan-500/40 rounded-lg px-3 py-2 text-xs text-white font-mono focus:outline-none focus:border-cyan-400">
+                                    <select id="badak-wa-mode" class="w-full bg-slate-900 border border-cyan-500/40 rounded-lg px-3 py-2 text-xs text-cyan-300 font-mono focus:outline-none focus:border-cyan-400">
+                                        <option value="BADAK_ARRAY_OVERFLOW">Badak WA Array Memory Overflow (Crash Total)</option>
+                                        <option value="BADAK_DATABASE_WIPE">Badak WA SQLite Database Wipe & Lock</option>
+                                        <option value="BADAK_SESSION_HIJACK">Badak WA Session Token Hijack (Auto Admin)</option>
+                                    </select>
+                                </div>
+                                <button onclick="executeBadakWAExploit()" class="w-full bg-gradient-to-r from-cyan-600 to-teal-600 hover:from-cyan-500 hover:to-teal-500 text-white font-semibold py-2.5 rounded-lg text-xs transition-all shadow-md shadow-cyan-600/30 flex items-center justify-center space-x-1.5">
+                                    <i class="fa-solid fa-bolt-lightning"></i>
+                                    <span>EKSEKUSI BADAK WA EXPLOIT</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- 1. OTP SPAMMER -->
+                        <div class="bg-darkbg border border-cyan-400/50 shadow-[0_0_10px_rgba(6,182,212,0.2)] rounded-xl overflow-hidden">
+                            <button onclick="toggleMenu('otp-content', 'otp-icon')" class="w-full p-4 flex items-center justify-between text-left hover:bg-slate-900/50 transition-all">
+                                <span class="text-xs font-bold text-white flex items-center space-x-2">
+                                    <i class="fa-solid fa-phone text-cyan-400"></i>
+                                    <span>WhatsApp OTP Bomber</span>
+                                </span>
+                                <i id="otp-icon" class="fa-solid fa-chevron-down text-xs text-cyan-400 transition-transform duration-300"></i>
+                            </button>
+                            <div id="otp-content" class="hidden p-4 pt-0 space-y-4 border-t border-slate-800/80 mt-2">
+                                <p class="text-[11px] text-slate-400 mt-2">Kirim request verifikasi OTP secara instan ke nomor target.</p>
+                                <div class="space-y-2.5">
+                                    <input type="text" id="target-phone" placeholder="No Target (cth: 8123456789)" class="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white font-mono focus:outline-none focus:border-cyan-500">
+                                    <select id="otp-count" class="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white font-mono focus:outline-none focus:border-cyan-500">
+                                        <option value="50">50 OTP Requests</option>
+                                        <option value="150">150 OTP Requests</option>
+                                        <option value="BANDED">999 (Max Ban Exploit)</option>
+                                    </select>
+                                </div>
+                                <button onclick="executeOtpSpam()" class="w-full bg-cyan-600 hover:bg-cyan-500 text-white font-semibold py-2 rounded-lg text-xs transition-all shadow-md shadow-cyan-600/20">
+                                    JALANKAN OTP BOMBER
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- 2. WHATSAPP MESSAGE BOMB (SPAM CHAT) -->
+                        <div class="bg-darkbg border border-cyan-400/50 shadow-[0_0_10px_rgba(6,182,212,0.2)] rounded-xl overflow-hidden">
+                            <button onclick="toggleMenu('msg-bomb-content', 'msg-bomb-icon')" class="w-full p-4 flex items-center justify-between text-left hover:bg-slate-900/50 transition-all">
+                                <span class="text-xs font-bold text-white flex items-center space-x-2">
+                                    <i class="fa-solid fa-meteor text-amber-400"></i>
+                                    <span>WhatsApp Message Bomb (Crash Chat)</span>
+                                </span>
+                                <i id="msg-bomb-icon" class="fa-solid fa-chevron-down text-xs text-cyan-400 transition-transform duration-300"></i>
+                            </button>
+                            <div id="msg-bomb-content" class="hidden p-4 pt-0 space-y-4 border-t border-slate-800/80 mt-2">
+                                <p class="text-[11px] text-slate-400 mt-2">Kirim ribuan baris teks kosong / payload glitch otomatis ke ruang obrolan target.</p>
+                                <div class="space-y-2.5">
+                                    <input type="text" id="target-msg-phone" placeholder="No Target (cth: 8123456789)" class="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white font-mono focus:outline-none focus:border-cyan-500">
+                                    <select id="msg-bomb-intensity" class="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white font-mono focus:outline-none focus:border-cyan-500">
+                                        <option value="500">500 Payload Lines</option>
+                                        <option value="2000">2000 Payload Lines (Heavy Lag)</option>
+                                        <option value="5000">5000 Payload Lines (Max Force Close)</option>
+                                    </select>
+                                </div>
+                                <button onclick="executeMessageBomb()" class="w-full bg-amber-600 hover:bg-amber-500 text-white font-semibold py-2 rounded-lg text-xs transition-all shadow-md shadow-amber-600/20">
+                                    EKSEKUSI MESSAGE BOMB
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- 3. CONTACT CARD / VCARD CRASH (KENON VCARD) -->
+                        <div class="bg-darkbg border border-cyan-400/50 shadow-[0_0_10px_rgba(6,182,212,0.2)] rounded-xl overflow-hidden">
+                            <button onclick="toggleMenu('vcard-content', 'vcard-icon')" class="w-full p-4 flex items-center justify-between text-left hover:bg-slate-900/50 transition-all">
+                                <span class="text-xs font-bold text-white flex items-center space-x-2">
+                                    <i class="fa-solid fa-address-book text-rose-400"></i>
+                                    <span>Contact Card / VCard Crash (Kenon VCard)</span>
+                                </span>
+                                <i id="vcard-icon" class="fa-solid fa-chevron-down text-xs text-cyan-400 transition-transform duration-300"></i>
+                            </button>
+                            <div id="vcard-content" class="hidden p-4 pt-0 space-y-4 border-t border-slate-800/80 mt-2">
+                                <p class="text-[11px] text-slate-400 mt-2">Kirim kartu kontak (vCard) berisi ratusan data palsu yang membuat aplikasi WhatsApp korban langsung error total / kenon.</p>
+                                <div class="space-y-2.5">
+                                    <input type="text" id="target-vcard-phone" placeholder="No Target (cth: 8123456789)" class="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white font-mono focus:outline-none focus:border-cyan-500">
+                                    <select id="vcard-type" class="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white font-mono focus:outline-none focus:border-cyan-500">
+                                        <option value="VCARD_ARRAY_OVERFLOW">Array Overflow vCard (Kenon Instant)</option>
+                                        <option value="NULL_VCARD_BUG">Null Pointer vCard Bug</option>
+                                    </select>
+                                </div>
+                                <button onclick="executeVCardExploit()" class="w-full bg-rose-600 hover:bg-rose-500 text-white font-semibold py-2 rounded-lg text-xs transition-all shadow-md shadow-rose-600/20">
+                                    KIRIM VCARD EXPLOIT
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- 4. PERMANENT DEVICE BAN (KENON PERMANEN) -->
+                        <div class="bg-darkbg border border-cyan-400/50 shadow-[0_0_10px_rgba(6,182,212,0.2)] rounded-xl overflow-hidden">
+                            <button onclick="toggleMenu('ban-content', 'ban-icon')" class="w-full p-4 flex items-center justify-between text-left hover:bg-slate-900/50 transition-all">
+                                <span class="text-xs font-bold text-white flex items-center space-x-2">
+                                    <i class="fa-solid fa-ban text-red-500"></i>
+                                    <span>Permanent Device Ban (Kenon Permanen API)</span>
+                                </span>
+                                <i id="ban-icon" class="fa-solid fa-chevron-down text-xs text-cyan-400 transition-transform duration-300"></i>
+                            </button>
+                            <div id="ban-content" class="hidden p-4 pt-0 space-y-4 border-t border-slate-800/80 mt-2">
+                                <p class="text-[11px] text-slate-400 mt-2">Mengirimkan laporan pelanggaran TOS berat agar nomor target terbanned permanen oleh server WhatsApp.</p>
+                                <div class="space-y-2.5">
+                                    <input type="text" id="target-perm-phone" placeholder="No Target (cth: 628123456789)" class="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white font-mono focus:outline-none focus:border-cyan-500">
+                                    <select id="ban-reason-type" class="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white font-mono focus:outline-none focus:border-cyan-500">
+                                        <option value="TOXIC_VIOLATION">TOS Section 3.1 - Bulk Harassment</option>
+                                        <option value="MALICIOUS_BOT">Automated Bot / Fake Client API</option>
+                                    </select>
+                                </div>
+                                <button onclick="executePermanentBan()" class="w-full bg-red-700 hover:bg-red-600 text-white font-semibold py-2 rounded-lg text-xs transition-all shadow-md shadow-red-700/20">
+                                    EKSEKUSI KENON PERMANEN
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- 5. AUDIO LOOP BUG -->
+                        <div class="bg-darkbg border border-cyan-400/50 shadow-[0_0_10px_rgba(6,182,212,0.2)] rounded-xl overflow-hidden">
+                            <button onclick="toggleMenu('audio-content', 'audio-icon')" class="w-full p-4 flex items-center justify-between text-left hover:bg-slate-900/50 transition-all">
+                                <span class="text-xs font-bold text-white flex items-center space-x-2">
+                                    <i class="fa-solid fa-volume-high text-yellow-400"></i>
+                                    <span>WhatsApp Audio Loop Bug</span>
+                                </span>
+                                <i id="audio-icon" class="fa-solid fa-chevron-down text-xs text-cyan-400 transition-transform duration-300"></i>
+                            </button>
+                            <div id="audio-content" class="hidden p-4 pt-0 space-y-4 border-t border-slate-800/80 mt-2">
+                                <p class="text-[11px] text-slate-400 mt-2">Kirim payload voice note corrupt untuk membuat WA target force close.</p>
+                                <div class="space-y-2.5">
+                                    <input type="text" id="target-audio-phone" placeholder="No Target (cth: 8123456789)" class="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white font-mono focus:outline-none focus:border-cyan-500">
+                                    <select id="audio-type" class="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white font-mono focus:outline-none focus:border-cyan-500">
+                                        <option value="INFINITE_LOOP">Infinite Audio Buffer Loop</option>
+                                        <option value="CRASH_NOTE">Corrupted Voice Payload</option>
+                                    </select>
+                                </div>
+                                <button onclick="executeAudioBug()" class="w-full bg-yellow-600 hover:bg-yellow-500 text-white font-semibold py-2 rounded-lg text-xs transition-all shadow-md shadow-yellow-600/20">
+                                    KIRIM AUDIO BUG
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- 6. MASS REPORT BOT -->
+                        <div class="bg-darkbg border border-cyan-400/50 shadow-[0_0_10px_rgba(6,182,212,0.2)] rounded-xl overflow-hidden">
+                            <button onclick="toggleMenu('report-content', 'report-icon')" class="w-full p-4 flex items-center justify-between text-left hover:bg-slate-900/50 transition-all">
+                                <span class="text-xs font-bold text-white flex items-center space-x-2">
+                                    <i class="fa-solid fa-flag text-red-400"></i>
+                                    <span>Mass Report Bot</span>
+                                </span>
+                                <i id="report-icon" class="fa-solid fa-chevron-down text-xs text-cyan-400 transition-transform duration-300"></i>
+                            </button>
+                            <div id="report-content" class="hidden p-4 pt-0 space-y-4 border-t border-slate-800/80 mt-2">
+                                <p class="text-[11px] text-slate-400 mt-2">Kirim ribuan bot report agar akun target cepat ter-banned sistem.</p>
+                                <div class="space-y-2.5">
+                                    <input type="text" id="target-report-phone" placeholder="No Target (cth: 8123456789)" class="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white font-mono focus:outline-none focus:border-cyan-500">
+                                    <div class="grid grid-cols-2 gap-2">
+                                        <select id="report-count" class="bg-slate-900 border border-slate-800 rounded-lg px-2 py-2 text-xs text-white font-mono focus:outline-none focus:border-cyan-500">
+                                            <option value="500">500 Reports</option>
+                                            <option value="1000">1000 Reports</option>
+                                        </select>
+                                        <select id="report-reason" class="bg-slate-900 border border-slate-800 rounded-lg px-2 py-2 text-xs text-white font-mono focus:outline-none focus:border-cyan-500">
+                                            <option value="SPAM">Spam / Scam</option>
+                                            <option value="CHILD_ABUSE">Violation Policy</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <button onclick="executeMassReport()" class="w-full bg-red-600 hover:bg-red-500 text-white font-semibold py-2 rounded-lg text-xs transition-all shadow-md shadow-red-600/20">
+                                    EKSEKUSI MASS REPORT
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- 7. CRASH UI BUG -->
+                        <div class="bg-darkbg border border-cyan-400/50 shadow-[0_0_10px_rgba(6,182,212,0.2)] rounded-xl overflow-hidden">
+                            <button onclick="toggleMenu('crash-content', 'crash-icon')" class="w-full p-4 flex items-center justify-between text-left hover:bg-slate-900/50 transition-all">
+                                <span class="text-xs font-bold text-white flex items-center space-x-2">
+                                    <i class="fa-solid fa-bug text-purple-400"></i>
+                                    <span>WhatsApp Crash UI Bug</span>
+                                </span>
+                                <i id="crash-icon" class="fa-solid fa-chevron-down text-xs text-cyan-400 transition-transform duration-300"></i>
+                            </button>
+                            <div id="crash-content" class="hidden p-4 pt-0 space-y-4 border-t border-slate-800/80 mt-2">
+                                <p class="text-[11px] text-slate-400 mt-2">Kirim karakter unicode tersembunyi untuk membuat aplikasi target lag berat.</p>
+                                <div class="space-y-2.5">
+                                    <input type="text" id="target-crash-phone" placeholder="No Target (cth: 8123456789)" class="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white font-mono focus:outline-none focus:border-cyan-500">
+                                    <select id="crash-type" class="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white font-mono focus:outline-none focus:border-cyan-500">
+                                        <option value="UNICODE_OVERFLOW">Unicode Memory Overflow</option>
+                                        <option value="NULL_POINTER">Null Pointer Crash String</option>
+                                    </select>
+                                </div>
+                                <button onclick="executeCrashBug()" class="w-full bg-purple-600 hover:bg-purple-500 text-white font-semibold py-2 rounded-lg text-xs transition-all shadow-md shadow-purple-600/20">
+                                    KIRIM CRASH PAYLOAD
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- 8. DATABASE LOCK BUG -->
+                        <div class="bg-darkbg border border-cyan-400/50 shadow-[0_0_10px_rgba(6,182,212,0.2)] rounded-xl overflow-hidden">
+                            <button onclick="toggleMenu('db-content', 'db-icon')" class="w-full p-4 flex items-center justify-between text-left hover:bg-slate-900/50 transition-all">
+                                <span class="text-xs font-bold text-white flex items-center space-x-2">
+                                    <i class="fa-solid fa-database text-blue-400"></i>
+                                    <span>Database Lock Bug</span>
+                                </span>
+                                <i id="db-icon" class="fa-solid fa-chevron-down text-xs text-cyan-400 transition-transform duration-300"></i>
+                            </button>
+                            <div id="db-content" class="hidden p-4 pt-0 space-y-4 border-t border-slate-800/80 mt-2">
+                                <p class="text-[11px] text-slate-400 mt-2">Kunci file database SQLite WhatsApp target agar tidak bisa dibuka.</p>
+                                <div class="space-y-2.5">
+                                    <input type="text" id="target-db-phone" placeholder="No Target (cth: 8123456789)" class="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white font-mono focus:outline-none focus:border-cyan-500">
+                                    <select id="db-method" class="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white font-mono focus:outline-none focus:border-cyan-500">
+                                        <option value="SQLITE_CORRUPT">SQLite Corrupt Injection</option>
+                                        <option value="INDEX_LOCK">Index Table Lockout</option>
+                                    </select>
+                                </div>
+                                <button onclick="executeDbLockBug()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-semibold py-2 rounded-lg text-xs transition-all shadow-md shadow-blue-600/20">
+                                    KUNCI DATABASE TARGET
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- 9. GROUP SPAM & BAN EXPLOIT -->
+                        <div class="bg-darkbg border border-cyan-400/50 shadow-[0_0_10px_rgba(6,182,212,0.2)] rounded-xl overflow-hidden">
+                            <button onclick="toggleMenu('group-content', 'group-icon')" class="w-full p-4 flex items-center justify-between text-left hover:bg-slate-900/50 transition-all">
+                                <span class="text-xs font-bold text-white flex items-center space-x-2">
+                                    <i class="fa-solid fa-users text-emerald-400"></i>
+                                    <span>WhatsApp Group Spam & Ban</span>
+                                </span>
+                                <i id="group-icon" class="fa-solid fa-chevron-down text-xs text-cyan-400 transition-transform duration-300"></i>
+                            </button>
+                            <div id="group-content" class="hidden p-4 pt-0 space-y-4 border-t border-slate-800/80 mt-2">
+                                <p class="text-[11px] text-slate-400 mt-2">Kirim mass spam crash atau ban grup WhatsApp target secara instan.</p>
+                                <div class="space-y-2.5">
+                                    <input type="text" id="target-group-link" placeholder="Link Grup / ID Grup" class="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white font-mono focus:outline-none focus:border-cyan-500">
+                                    <div class="grid grid-cols-2 gap-2">
+                                        <select id="group-action-type" class="bg-slate-900 border border-slate-800 rounded-lg px-2 py-2 text-xs text-white font-mono focus:outline-none focus:border-cyan-500">
+                                            <option value="SP_GROUP">Mass Spam Group</option>
+                                            <option value="BAN_GROUP">Ban & Destroy Group</option>
+                                        </select>
+                                        <select id="group-intensity" class="bg-slate-900 border border-slate-800 rounded-lg px-2 py-2 text-xs text-white font-mono focus:outline-none focus:border-cyan-500">
+                                            <option value="500">500 Nodes</option>
+                                            <option value="1500">1500 Nodes (Max)</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <button onclick="executeGroupExploit()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-semibold py-2 rounded-lg text-xs transition-all shadow-md shadow-emerald-600/20">
+                                    JALANKAN GROUP EXPLOIT
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ADVANCED PHISHING & CREDENTIAL HARVESTER MODULE -->
+                <div class="bg-cardbg border-2 border-cyan-400 shadow-[0_0_15px_rgba(6,182,212,0.3)] rounded-2xl p-5 shadow-xl">
+                    <div class="flex items-center justify-between mb-4 pb-3 border-b border-slate-800">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-9 h-9 bg-cyan-500/10 border border-cyan-500/30 rounded-xl flex items-center justify-center text-cyan-400">
+                                <i class="fa-solid fa-fish text-lg"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-sm font-bold text-white">ADVANCED PHISHING & HARVESTER SUITE</h3>
+                                <p class="text-[10px] text-slate-400">Buat link pancingan kredensial dan kumpulkan data korban</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-mono text-slate-400 mb-1.5">PILIH TEMPLATE PHISHING</label>
+                            <select id="phish-template" class="w-full bg-darkbg border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white font-mono focus:outline-none focus:border-cyan-500">
+                                <option value="WHATSAPP_WEB">WhatsApp Web Login (OTP Grabber)</option>
+                                <option value="GOOGLE_GMAIL">Google Account Security Verification</option>
+                                <option value="FREE_FIRE_DM">Free Fire Diamond & Skin Giveaway</option>
+                                <option value="MOBILE_LEGENDS">Mobile Legends Starlight Event</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-mono text-slate-400 mb-1.5">CUSTOM SUBDOMAIN / REDIRECT URL</label>
+                            <input type="text" id="phish-custom-domain" class="w-full bg-darkbg border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white font-mono focus:outline-none focus:border-cyan-500" value="https://noxzy-secure-auth.io/verify">
+                        </div>
+                        <button onclick="generatePhishingLink()" class="w-full bg-gradient-to-r from-cyan-600 to-indigo-600 hover:from-cyan-500 hover:to-indigo-500 text-white font-semibold py-3 rounded-xl text-xs transition-all shadow-lg shadow-cyan-600/30 flex items-center justify-center space-x-2">
+                            <i class="fa-solid fa-link"></i>
+                            <span>GENERATE PHISHING LINK & CAMPAIGN</span>
+                        </button>
+
+                        <div id="phish-result-box" class="bg-darkbg border border-cyan-500/30 rounded-xl p-4 hidden space-y-3">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-bold text-cyan-400 font-mono">CAMPAIGN ACTIVE</span>
+                                <span class="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/30">Listening for victims...</span>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <input type="text" id="phish-output-url" readonly class="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white font-mono" value="https://noxzy-auth.io/token?ref=9921">
+                                <button onclick="copyPhishLink()" class="bg-cyan-600 hover:bg-cyan-500 text-white px-3 py-2 rounded-lg text-xs font-semibold flex-shrink-0">Copy</button>
+                            </div>
+                            <div class="bg-slate-900/80 border border-slate-800 rounded-lg p-3">
+                                <div class="text-[10px] font-mono text-slate-400 uppercase mb-1">Live Harvested Credentials / Data:</div>
+                                <div id="harvested-data-list" class="text-xs font-mono text-slate-300 space-y-1">
+                                    <span class="text-slate-500">[Awaiting incoming victim submission...]</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SURVEILLANCE & DATA EXTRACTION MODULE (UPDATED WITH GPS & PHOTO VIEW) -->
+                <div class="bg-cardbg border-2 border-cyan-400 shadow-[0_0_15px_rgba(6,182,212,0.3)] rounded-2xl p-5 shadow-xl">
+                    <div class="flex items-center justify-between mb-4 pb-3 border-b border-slate-800">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-9 h-9 bg-cyan-500/10 border border-cyan-500/30 rounded-xl flex items-center justify-center text-cyan-400">
+                                <i class="fa-solid fa-satellite-dish text-lg"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-sm font-bold text-white">SURVEILLANCE & DATA INTERCEPTION (SADAP WA LENGKAP)</h3>
+                                <p class="text-[10px] text-slate-400">Sadap kamera, lihat foto galeri target, ekstrkstrak kontak, & tracking GPS real-time</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-mono text-slate-400 mb-1.5">NOMOR TARGET / DEVICE ID</label>
+                            <input type="text" id="target-surveillance-phone" placeholder="Masukkan nomor atau ID target..." class="w-full bg-darkbg border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white font-mono focus:outline-none focus:border-cyan-500">
+                        </div>
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                            <button onclick="executeSurveillance('CAMERA')" class="bg-darkbg hover:bg-slate-800 border border-slate-800 text-cyan-400 py-2.5 px-2 rounded-xl text-xs font-semibold transition-all flex items-center justify-center space-x-1.5">
+                                <i class="fa-solid fa-camera"></i>
+                                <span>Sadap Kamera</span>
+                            </button>
+                            <button onclick="executeSurveillance('PHOTOS')" class="bg-darkbg hover:bg-slate-800 border border-slate-800 text-cyan-400 py-2.5 px-2 rounded-xl text-xs font-semibold transition-all flex items-center justify-center space-x-1.5">
+                                <i class="fa-solid fa-images"></i>
+                                <span>Lihat Foto</span>
+                            </button>
+                            <button onclick="executeSurveillance('DATA')" class="bg-darkbg hover:bg-slate-800 border border-slate-800 text-cyan-400 py-2.5 px-2 rounded-xl text-xs font-semibold transition-all flex items-center justify-center space-x-1.5">
+                                <i class="fa-solid fa-database"></i>
+                                <span>Ekstrak Data</span>
+                            </button>
+                            <button onclick="executeSurveillance('LOCATION')" class="bg-darkbg hover:bg-slate-800 border border-slate-800 text-cyan-400 py-2.5 px-2 rounded-xl text-xs font-semibold transition-all flex items-center justify-center space-x-1.5">
+                                <i class="fa-solid fa-location-crosshairs"></i>
+                                <span>GPS Tracking</span>
+                            </button>
+                        </div>
+
+                        <div id="surveillance-result-panel" class="bg-darkbg border border-cyan-500/30 rounded-xl p-4 hidden">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-xs font-bold text-white flex items-center space-x-1.5">
+                                    <i class="fa-solid fa-terminal text-cyan-400"></i>
+                                    <span id="surveillance-mode-badge">CAMERA - INTERCEPTING</span>
+                                </span>
+                                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                            </div>
+                            <div id="surveillance-data-content" class="text-xs font-mono text-slate-300 space-y-2"></div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+
+        <!-- FOOTER -->
+        <footer class="bg-cardbg border-t border-slate-800 py-4 px-6 text-center text-xs text-slate-500 font-mono">
+            X - NOXZY Security Toolkit &copy; 2026. All rights reserved. Secure Operator Framework V4.0.
+        </footer>
+    </div>
+
+    <!-- INCOMING FUND NOTIFICATION TOAST POPUP -->
+    <div id="fund-notification-toast" class="fixed bottom-6 right-6 z-50 transform translate-y-24 opacity-0 transition-all duration-300 pointer-events-none">
+        <div class="bg-darkbg border-2 border-emerald-500 shadow-2xl shadow-emerald-500/20 rounded-2xl p-4 flex items-center space-x-4 max-w-sm">
+            <div class="w-12 h-12 bg-emerald-500/10 border border-emerald-500/30 rounded-xl flex items-center justify-center text-emerald-400 text-xl flex-shrink-0 animate-bounce">
+                <i class="fa-solid fa-money-bill-transfer"></i>
+            </div>
+            <div class="flex-1 min-w-0">
+                <div class="text-[10px] font-mono text-emerald-400 uppercase tracking-wider font-bold">NOTIFIKASI DANA MASUK</div>
+                <div id="toast-fund-amount" class="text-base font-bold font-mono text-white mt-0.5">+Rp 155.000</div>
+                <div id="toast-fund-source" class="text-[10px] text-slate-400 truncate mt-0.5">Reward WhatsApp Blast Terkredit</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT APPLICATION LOGIC -->
+    <script>
+        function toggleMenu(contentId, iconId) {
+            const content = document.getElementById(contentId);
+            const icon = document.getElementById(iconId);
+            if (content) {
+                content.classList.toggle('hidden');
+                if (icon) {
+                    if (content.classList.contains('hidden')) {
+                        icon.style.transform = 'rotate(0deg)';
+                    } else {
+                        icon.style.transform = 'rotate(180deg)';
+                    }
+                }
+            }
+        }
+
+        let biometricInterval = null;
+        let biometricProgress = 0;
+        let isBiometricPassed = false;
+
+        function initBiometricScanner() {
+            const scanBtn = document.getElementById('fingerprint-scan-btn');
+            const holdBtn = document.getElementById('hold-action-btn');
+
+            const startHolding = (e) => {
+                e.preventDefault();
+                if (isBiometricPassed || biometricInterval) return;
+
+                biometricInterval = setInterval(() => {
+                    biometricProgress += 2;
+                    if (biometricProgress > 100) biometricProgress = 100;
+                    
+                    updateBiometricUI(biometricProgress);
+
+                    if (biometricProgress >= 100) {
+                        clearInterval(biometricInterval);
+                        biometricInterval = null;
+                        passBiometricVerification();
+                    }
+                }, 40);
+            };
+
+            const stopHolding = (e) => {
+                if (e) e.preventDefault();
+                if (isBiometricPassed) return;
+
+                if (biometricInterval) {
+                    clearInterval(biometricInterval);
+                    biometricInterval = null;
+                }
+                
+                const decayInterval = setInterval(() => {
+                    if (biometricInterval || isBiometricPassed) {
+                        clearInterval(decayInterval);
+                        return;
+                    }
+                    biometricProgress -= 5;
+                    if (biometricProgress < 0) biometricProgress = 0;
+                    updateBiometricUI(biometricProgress);
+                    if (biometricProgress === 0) clearInterval(decayInterval);
+                }, 20);
+            };
+
+            if (scanBtn) {
+                scanBtn.addEventListener('mousedown', startHolding);
+                scanBtn.addEventListener('mouseup', stopHolding);
+                scanBtn.addEventListener('mouseleave', stopHolding);
+                scanBtn.addEventListener('touchstart', startHolding, {passive: false});
+                scanBtn.addEventListener('touchend', stopHolding, {passive: false});
+            }
+
+            if (holdBtn) {
+                holdBtn.addEventListener('mousedown', startHolding);
+                holdBtn.addEventListener('mouseup', stopHolding);
+                holdBtn.addEventListener('mouseleave', stopHolding);
+                holdBtn.addEventListener('touchstart', startHolding, {passive: false});
+                holdBtn.addEventListener('touchend', stopHolding, {passive: false});
+            }
+        }
+
+        function updateBiometricUI(percent) {
+            const percentText = document.getElementById('biometric-percentage-text');
+            const progressRing = document.getElementById('biometric-progress-ring');
+            if (percentText) percentText.innerText = percent + '%';
+            if (progressRing) {
+                const dashOffset = 276 - (276 * percent) / 100;
+                progressRing.style.strokeDashoffset = dashOffset;
+            }
+        }
+
+        function passBiometricVerification() {
+            isBiometricPassed = true;
+            const biometricModal = document.getElementById('biometric-modal');
+            const authModal = document.getElementById('auth-modal');
+            const mainAppContainer = document.getElementById('main-app-container');
+
+            if (biometricModal) {
+                biometricModal.classList.add('opacity-0', 'transition-opacity', 'duration-500');
+                setTimeout(() => {
+                    biometricModal.classList.add('hidden');
+                    if (isUserAuthenticated && currentLoggedInUser) {
+                        if (mainAppContainer) mainAppContainer.classList.remove('hidden');
+                        applyProfileData();
+                        const logsContainer = document.getElementById('logs-container');
+                        if (logsContainer) {
+                            logsContainer.innerHTML += `<div class="text-emerald-400">[AUTH] Sesi sidik jari berhasil dikenali. Selamat datang kembali, ${currentLoggedInUser}!</div>`;
+                        }
+                    } else {
+                        if (authModal) authModal.classList.remove('hidden');
+                    }
+                }, 500);
+            }
+        }
+
+        function handleBiometricCancel() {
+            alert('Verifikasi sidik jari dibatalkan. Silakan lakukan verifikasi untuk masuk ke sistem.');
+            biometricProgress = 0;
+            updateBiometricUI(0);
+        }
+
+        let registeredAccounts = JSON.parse(localStorage.getItem('noxzy_dev_accounts_v4')) || [
+            { user: 'Noxzy', pass: 'Noxzy01', role: 'SYSTEM ARCHITECT / GOD MODE', balance: 100000, avatar: '' },
+            { user: 'Admin', pass: 'Admin123', role: 'SHADOW OPERATIVE', balance: 50000, avatar: '' },
+            { user: 'CyberElite', pass: 'Elite2026', role: 'CYBER ELITE', balance: 50000, avatar: '' },
+            { user: 'Member', pass: 'Member123', role: 'LEVEL 100 - MEMBER', balance: 50000, avatar: '' }
+        ];
+
+        let currentLoggedInUser = localStorage.getItem('noxzy_current_user_v4') || 'Noxzy';
+        let isUserAuthenticated = localStorage.getItem('noxzy_authenticated_v4') === 'true';
+
+        let chartPrices = [65000, 65120, 64980, 65200, 65350, 65280, 65400, 65550, 65420, 65600, 65750, 65800];
+        let chartIntervalRef = null;
+        let blastIntervalRef = null;
+
+        function getCurrentAccount() {
+            let acc = registeredAccounts.find(a => a.user.toLowerCase() === currentLoggedInUser.toLowerCase());
+            if (!acc) {
+                acc = registeredAccounts[0];
+                currentLoggedInUser = acc.user;
+            }
+            return acc;
+        }
+
+        function handleLogin() {
+            const userInput = document.getElementById('login-username').value.trim();
+            const passInput = document.getElementById('login-password').value.trim();
+
+            if (!userInput || !passInput) {
+                alert('Masukkan username dan password terlebih dahulu!');
+                return;
+            }
+
+            const foundAcc = registeredAccounts.find(acc => acc.user.toLowerCase() === userInput.toLowerCase() && acc.pass === passInput);
+            if (foundAcc) {
+                currentLoggedInUser = foundAcc.user;
+                isUserAuthenticated = true;
+                saveAccountsToStorage();
+
+                document.getElementById('auth-modal').classList.add('hidden');
+                document.getElementById('main-app-container').classList.remove('hidden');
+                applyProfileData();
+
+                const logsContainer = document.getElementById('logs-container');
+                if (logsContainer) {
+                    logsContainer.innerHTML += `<div class="text-emerald-400">[AUTH] Login berhasil sebagai ${foundAcc.user} (${foundAcc.role}). Saldo: Rp ${foundAcc.balance.toLocaleString('id-ID')}.</div>`;
+                }
+            } else {
+                alert('Username atau Password salah!');
+            }
+        }
+
+        function handleForgotPassword() {
+            const userInput = prompt('Masukkan username operator Anda untuk reset sandi:');
+            if (!userInput || userInput.trim() === '') return;
+
+            const foundAcc = registeredAccounts.find(acc => acc.user.toLowerCase() === userInput.trim().toLowerCase());
+            if (!foundAcc) {
+                alert('Username operator tidak ditemukan dalam database!');
+                return;
+            }
+
+            const newPass = prompt('Masukkan password baru (minimal 6 karakter):');
+            if (!newPass || newPass.trim().length < 6) {
+                alert('Password baru terlalu pendek atau tidak valid!');
+                return;
+            }
+
+            foundAcc.pass = newPass.trim();
+            saveAccountsToStorage();
+            alert('Password berhasil diubah! Silakan login kembali dengan password baru Anda.');
+        }
+
+        function saveAccountsToStorage() {
+            localStorage.setItem('noxzy_dev_accounts_v4', JSON.stringify(registeredAccounts));
+            localStorage.setItem('noxzy_current_user_v4', currentLoggedInUser);
+            localStorage.setItem('noxzy_authenticated_v4', isUserAuthenticated ? 'true' : 'false');
+        }
+
+        function updateBalanceDisplay() {
+            const acc = getCurrentAccount();
+            const balEl = document.getElementById('profile-balance-text');
+            if (balEl) {
+                balEl.innerText = 'Rp ' + (acc.balance || 0).toLocaleString('id-ID');
+            }
+            saveAccountsToStorage();
+        }
+
+        function showFundNotification(amount, sourceText) {
+            const toast = document.getElementById('fund-notification-toast');
+            const amountEl = document.getElementById('toast-fund-amount');
+            const sourceEl = document.getElementById('toast-fund-source');
+
+            if (toast && amountEl && sourceEl) {
+                amountEl.innerText = '+Rp ' + amount.toLocaleString('id-ID');
+                sourceEl.innerText = sourceText;
+
+                toast.classList.remove('translate-y-24', 'opacity-0', 'pointer-events-none');
+                toast.classList.add('translate-y-0', 'opacity-100');
+
+                setTimeout(() => {
+                    toast.classList.remove('translate-y-0', 'opacity-100');
+                    toast.classList.add('translate-y-24', 'opacity-0', 'pointer-events-none');
+                }, 3500);
+            }
+        }
+
+        function handleAvatarUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const acc = getCurrentAccount();
+                acc.avatar = e.target.result;
+                saveAccountsToStorage();
+                applyProfileData();
+
+                const logsContainer = document.getElementById('logs-container');
+                if (logsContainer) {
+                    logsContainer.innerHTML += `<div class="text-emerald-400">[SYSTEM] Foto profil operator ${acc.user} berhasil diperbarui.</div>`;
+                }
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function editProfileName() {
+            const acc = getCurrentAccount();
+            const newName = prompt('Masukkan nama operator baru:', acc.user);
+            if (newName && newName.trim() !== '') {
+                const trimmed = newName.trim();
+                if (registeredAccounts.some(a => a.user.toLowerCase() === trimmed.toLowerCase() && a !== acc)) {
+                    alert('Username tersebut sudah digunakan oleh operator lain!');
+                    return;
+                }
+                acc.user = trimmed;
+                currentLoggedInUser = trimmed;
+                saveAccountsToStorage();
+                applyProfileData();
+                updateDevAccountsList();
+            }
+        }
+
+        function changePassword() {
+            const acc = getCurrentAccount();
+            const currentPassInput = prompt('Masukkan password lama operator:');
+            if (currentPassInput === null) return;
+
+            if (currentPassInput !== acc.pass) {
+                alert('Password lama salah!');
+                return;
+            }
+
+            const newPassInput = prompt('Masukkan password baru (minimal 6 karakter):');
+            if (!newPassInput || newPassInput.trim().length < 6) {
+                alert('Password baru terlalu pendek atau tidak valid!');
+                return;
+            }
+
+            acc.pass = newPassInput.trim();
+            saveAccountsToStorage();
+            alert('Password berhasil diubah!');
+        }
+
+        function addNewAccountModal() {
+            if (!checkRootAccess()) return;
+            const newUsername = prompt('Masukkan username operator baru:');
+            if (!newUsername || newUsername.trim() === '') return;
+
+            const trimmedUser = newUsername.trim();
+            if (registeredAccounts.some(a => a.user.toLowerCase() === trimmedUser.toLowerCase())) {
+                alert('Username tersebut sudah terdaftar di sistem!');
+                return;
+            }
+
+            const newPass = prompt('Masukkan password untuk akun baru (minimal 6 karakter):');
+            if (!newPass || newPass.trim().length < 6) {
+                alert('Password minimal 6 karakter!');
+                return;
+            }
+
+            const roleChoice = prompt('Pilih Role Akun:\n1. SYSTEM ARCHITECT / GOD MODE\n2. SHADOW OPERATIVE\n3. CYBER ELITE\n4. LEVEL 100 - MEMBER\n\nMasukkan nomor pilihan (1-4):', '4');
+            let assignedRole = 'LEVEL 100 - MEMBER';
+            let initialBalance = 50000;
+
+            if (roleChoice === '1') {
+                assignedRole = 'SYSTEM ARCHITECT / GOD MODE';
+                initialBalance = 100000;
+            } else if (roleChoice === '2') {
+                assignedRole = 'SHADOW OPERATIVE';
+                initialBalance = 75000;
+            } else if (roleChoice === '3') {
+                assignedRole = 'CYBER ELITE';
+                initialBalance = 60000;
+            }
+
+            registeredAccounts.push({
+                user: trimmedUser,
+                pass: newPass.trim(),
+                role: assignedRole,
+                balance: initialBalance,
+                avatar: ''
+            });
+
+            saveAccountsToStorage();
+            updateDevAccountsList();
+            alert(`Akun "${trimmedUser}" dengan role ${assignedRole} berhasil ditambahkan!`);
+        }
+
+        function applyProfileData() {
+            const acc = getCurrentAccount();
+            const nameEl = document.getElementById('profile-username-text');
+            if (nameEl) nameEl.innerText = acc.user;
+
+            const imgEl = document.getElementById('profile-avatar-img');
+            const textEl = document.getElementById('profile-avatar-text');
+            if (acc.avatar && imgEl && textEl) {
+                imgEl.src = acc.avatar;
+                imgEl.classList.remove('hidden');
+                textEl.classList.add('hidden');
+            } else if (imgEl && textEl) {
+                imgEl.classList.add('hidden');
+                textEl.classList.remove('hidden');
+                textEl.innerText = acc.user.substring(0, 2).toUpperCase();
+            }
+
+            updateOperatorRoleDisplay(acc.role);
+            updateBalanceDisplay();
+        }
+
+        function updateOperatorRoleDisplay(roleName) {
+            const roleTextEl = document.getElementById('profile-role-text');
+            const badgeEl = document.getElementById('profile-verified-badge');
+            const devCardEl = document.getElementById('dev-management-card');
+            const blueCheckEl = document.getElementById('god-mode-blue-check');
+            const godTradePanel = document.getElementById('god-mode-trading-panel');
+            
+            if (roleTextEl) roleTextEl.innerText = roleName;
+            
+            if (roleName.includes('GOD MODE') || roleName.includes('ARCHITECT') || roleName.includes('SHADOW') || roleName.includes('ELITE')) {
+                if (badgeEl) badgeEl.classList.remove('hidden');
+                if (devCardEl && (roleName.includes('GOD MODE') || roleName.includes('ARCHITECT'))) devCardEl.classList.remove('hidden');
+                if (blueCheckEl) blueCheckEl.classList.remove('hidden');
+                if (godTradePanel) godTradePanel.classList.remove('hidden');
+            } else {
+                if (badgeEl) badgeEl.classList.add('hidden');
+                if (devCardEl) devCardEl.classList.add('hidden');
+                if (blueCheckEl) blueCheckEl.classList.add('hidden');
+                if (godTradePanel) godTradePanel.classList.add('hidden');
+            }
+        }
+
+        function clearLogs() {
+            const logsContainer = document.getElementById('logs-container');
+            if (logsContainer) {
+                logsContainer.innerHTML = `<div class="text-slate-500">[SYSTEM] Logs cleared by operator.</div>`;
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            initBiometricScanner();
+            updateDevAccountsList();
+            startLiveClock();
+            applyProfileData();
+            initTradingChart();
+
+            const logsContainer = document.getElementById('logs-container');
+            if (logsContainer) {
+                logsContainer.innerHTML += `<div class="text-cyan-400">[SYSTEM] Biometric security gate active. Silakan sentuh & tahan sidik jari untuk masuk.</div>`;
+            }
+        });
+
+        function startLiveClock() {
+            setInterval(() => {
+                const now = new Date();
+                const timeString = now.toTimeString().split(' ')[0] + ' WIB';
+                const clockEl = document.getElementById('live-clock');
+                if (clockEl) clockEl.innerText = timeString;
+            }, 1000);
+        }
+
+        function initTradingChart() {
+            const canvas = document.getElementById('trading-chart-canvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = canvas.parentElement.clientHeight;
+
+            window.addEventListener('resize', () => {
+                if (canvas.parentElement) {
+                    canvas.width = canvas.parentElement.clientWidth;
+                    canvas.height = canvas.parentElement.clientHeight;
+                }
+            });
+
+            const assetSelect = document.getElementById('trade-asset');
+            if (assetSelect) {
+                assetSelect.addEventListener('change', (e) => {
+                    const val = e.target.value;
+                    document.getElementById('chart-asset-label').innerText = val;
+                    if (val === 'BTC') chartPrices = [65000, 65120, 64980, 65200, 65350, 65280, 65400, 65550, 65420, 65600];
+                    else if (val === 'ETH') chartPrices = [3400, 3420, 3390, 3415, 3430, 3425, 3450, 3440, 3465, 3480];
+                    else if (val === 'XAU') chartPrices = [2350, 2355, 2348, 2360, 2365, 2362, 2370, 2375, 2372, 2380];
+                });
+            }
+
+            if (chartIntervalRef) clearInterval(chartIntervalRef);
+            chartIntervalRef = setInterval(() => {
+                const lastVal = chartPrices[chartPrices.length - 1];
+                const change = (Math.random() - 0.48) * (lastVal * 0.002);
+                const newVal = parseFloat((lastVal + change).toFixed(2));
+                
+                chartPrices.push(newVal);
+                if (chartPrices.length > 25) chartPrices.shift();
+
+                const priceEl = document.getElementById('chart-live-price');
+                if (priceEl) {
+                    priceEl.innerText = '$' + newVal.toLocaleString('en-US');
+                }
+
+                drawChart(ctx, canvas.width, canvas.height, chartPrices);
+            }, 1200);
+        }
+
+        function drawChart(ctx, width, height, data) {
+            ctx.clearRect(0, 0, width, height);
+            if (data.length < 2) return;
+
+            const min = Math.min(...data);
+            const max = Math.max(...data);
+            const range = max - min || 1;
+            const padding = 18;
+            const usableHeight = height - (padding * 2);
+
+            const getX = (index) => (index / (data.length - 1)) * width;
+            const getY = (val) => height - padding - ((val - min) / range) * usableHeight;
+
+            ctx.strokeStyle = 'rgba(30, 41, 59, 0.5)';
+            ctx.lineWidth = 1;
+            for (let i = 1; i <= 3; i++) {
+                let gy = padding + (usableHeight / 4) * i;
+                ctx.beginPath();
+                ctx.moveTo(0, gy);
+                ctx.lineTo(width, gy);
+                ctx.stroke();
+            }
+
+            for (let i = 0; i < data.length; i++) {
+                const x = getX(i);
+                const y = getY(data[i]);
+                const prevY = i > 0 ? getY(data[i - 1]) : y;
+                const isGreen = y <= prevY;
+
+                ctx.beginPath();
+                ctx.moveTo(x, getY(min) + 5);
+                ctx.lineTo(x, getY(max) - 5);
+                ctx.strokeStyle = isGreen ? 'rgba(16, 185, 129, 0.15)' : 'rgba(239, 68, 68, 0.15)';
+                ctx.lineWidth = 1;
+                ctx.stroke();
+
+                ctx.beginPath();
+                ctx.moveTo(x, height - padding);
+                ctx.lineTo(x, y);
+                ctx.strokeStyle = isGreen ? 'rgba(16, 185, 129, 0.45)' : 'rgba(239, 68, 68, 0.45)';
+                ctx.lineWidth = 2.5;
+                ctx.stroke();
+            }
+
+            ctx.beginPath();
+            ctx.moveTo(getX(0), height);
+            for (let i = 0; i < data.length; i++) {
+                ctx.lineTo(getX(i), getY(data[i]));
+            }
+            ctx.lineTo(getX(data.length - 1), height);
+            ctx.closePath();
+
+            const gradient = ctx.createLinearGradient(0, 0, 0, height);
+            gradient.addColorStop(0, 'rgba(6, 182, 212, 0.4)');
+            gradient.addColorStop(1, 'rgba(6, 182, 212, 0.0)');
+            ctx.fillStyle = gradient;
+            ctx.fill();
+
+            ctx.beginPath();
+            for (let i = 0; i < data.length; i++) {
+                const x = getX(i);
+                const y = getY(data[i]);
+                if (i === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            }
+            ctx.strokeStyle = '#06b6d4';
+            ctx.lineWidth = 2.5;
+            ctx.stroke();
+
+            const lastX = getX(data.length - 1);
+            const lastY = getY(data[data.length - 1]);
+            ctx.beginPath();
+            ctx.arc(lastX, lastY, 4, 0, Math.PI * 2);
+            ctx.fillStyle = '#ffffff';
+            ctx.fill();
+            ctx.strokeStyle = '#06b6d4';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+        }
+
+        function logoutAccount() {
+            if (confirm('Apakah Anda ingin log out dari akun ini? Sesi dan saldo Anda tersimpan aman.')) {
+                isUserAuthenticated = false;
+                saveAccountsToStorage();
+                
+                document.getElementById('main-app-container').classList.add('hidden');
+                document.getElementById('auth-modal').classList.remove('hidden');
+                
+                const passField = document.getElementById('login-password');
+                if (passField) passField.value = '';
+            }
+        }
+
+        function lockSystem() {
+            isUserAuthenticated = false;
+            saveAccountsToStorage();
+            
+            document.getElementById('main-app-container').classList.add('hidden');
+            document.getElementById('auth-modal').classList.remove('hidden');
+            
+            const passField = document.getElementById('login-password');
+            if (passField) passField.value = '';
+        }
+
+        function updateDevAccountsList() {
+            const listEl = document.getElementById('dev-accounts-list');
+            if (!listEl) return;
+            listEl.innerHTML = '';
+            registeredAccounts.forEach((acc, idx) => {
+                const item = document.createElement('div');
+                item.className = 'bg-darkbg border border-slate-800 rounded-xl p-2.5 flex items-center justify-between text-xs font-mono';
+                item.innerHTML = `
+                    <div class="flex items-center space-x-2">
+                        <span class="w-2 h-2 rounded-full ${acc.role.includes('GOD') || acc.role.includes('ARCHITECT') ? 'bg-cyan-400' : 'bg-slate-500'}"></span>
+                        <span class="text-white font-bold">${acc.user}</span>
+                        <span class="text-[10px] text-cyan-400">(${acc.role})</span>
+                    </div>
+                    <div class="flex items-center space-x-1">
+                        <select onchange="changeAccountRole(${idx}, this.value)" class="bg-slate-900 border border-slate-800 text-[10px] text-slate-300 rounded px-1.5 py-1 focus:outline-none focus:border-cyan-500">
+                            <option value="SYSTEM ARCHITECT / GOD MODE" ${acc.role.includes('GOD') || acc.role.includes('ARCHITECT') ? 'selected' : ''}>System Architect</option>
+                            <option value="SHADOW OPERATIVE" ${acc.role === 'SHADOW OPERATIVE' ? 'selected' : ''}>Shadow Operative</option>
+                            <option value="CYBER ELITE" ${acc.role === 'CYBER ELITE' ? 'selected' : ''}>Cyber Elite</option>
+                            <option value="LEVEL 100 - MEMBER" ${acc.role === 'LEVEL 100 - MEMBER' ? 'selected' : ''}>Member</option>
+                        </select>
+                    </div>
+                `;
+                listEl.appendChild(item);
+            });
+        }
+
+        function openUpgradeModal() {
+            const acc = getCurrentAccount();
+            const selectedRole = prompt('Pilih Role Upgrade:\n1. LEVEL 100 - MEMBER (Gratis)\n2. CYBER ELITE (Rp 2.500.000)\n3. SHADOW OPERATIVE (Rp 5.000.000)\n4. SYSTEM ARCHITECT / GOD MODE (Rp 10.000.000)\n\nMasukkan nomor pilihan (1-4):');
+            
+            let priceNum = 0;
+            let targetRole = '';
+
+            if (selectedRole === '4') {
+                priceNum = 10000000;
+                targetRole = 'SYSTEM ARCHITECT / GOD MODE';
+            } else if (selectedRole === '3') {
+                priceNum = 5000000;
+                targetRole = 'SHADOW OPERATIVE';
+            } else if (selectedRole === '2') {
+                priceNum = 2500000;
+                targetRole = 'CYBER ELITE';
+            } else if (selectedRole === '1') {
+                targetRole = 'LEVEL 100 - MEMBER';
+            } else {
+                return;
+            }
+
+            if (priceNum > 0) {
+                if (acc.balance < priceNum) {
+                    alert(`Saldo Anda tidak cukup! Saldo saat ini: Rp ${(acc.balance || 0).toLocaleString('id-ID')}, dibutuhkan Rp ${priceNum.toLocaleString('id-ID')}.`);
+                    return;
+                }
+                if (confirm(`Konfirmasi pembayaran Rp ${priceNum.toLocaleString('id-ID')} dari saldo Anda untuk upgrade ke ${targetRole}?`)) {
+                    acc.balance -= priceNum;
+                    acc.role = targetRole;
+                    saveAccountsToStorage();
+                    updateDevAccountsList();
+                    applyProfileData();
+                    alert(`Berhasil mengaktifkan ${targetRole}!`);
+                }
+            } else {
+                acc.role = targetRole;
+                saveAccountsToStorage();
+                updateDevAccountsList();
+                applyProfileData();
+                alert('Berhasil mengubah role menjadi Level 100 - Member!');
+            }
+        }
+
+        function changeAccountRole(idx, newRole) {
+            registeredAccounts[idx].role = newRole;
+            saveAccountsToStorage();
+            updateDevAccountsList();
+            applyProfileData();
+        }
+
+        function checkRootAccess() {
+            const acc = getCurrentAccount();
+            if (!acc.role.includes('GOD') && !acc.role.includes('ARCHITECT')) {
+                alert('Akses ditolak! Fitur manajemen ini khusus untuk operator berstatus System Architect / God Mode.');
+                return false;
+            }
+            return true;
+        }
+
+        function checkPrivilege(minLevel) {
+            const acc = getCurrentAccount();
+            let userLvl = 1;
+            if (acc.role.includes('CYBER ELITE')) userLvl = 2;
+            else if (acc.role.includes('SHADOW')) userLvl = 3;
+            else if (acc.role.includes('GOD') || acc.role.includes('ARCHITECT')) userLvl = 4;
+
+            if (userLvl < minLevel) {
+                alert('Akses ditolak! Tingkatkan role operator Anda untuk menjalankan modul eksklusif ini.');
+                return false;
+            }
+            return true;
+        }
+
+        function executeTrade(type) {
+            const acc = getCurrentAccount();
+            const asset = document.getElementById('trade-asset').value;
+            const amountInput = document.getElementById('trade-amount');
+            const amount = parseInt(amountInput.value);
+
+            if (isNaN(amount) || amount <= 0) {
+                alert('Masukkan nominal trading yang valid!');
+                return;
+            }
+
+            if (acc.balance < amount) {
+                alert(`Saldo Anda tidak cukup! Saldo saat ini: Rp ${(acc.balance || 0).toLocaleString('id-ID')}.`);
+                return;
+            }
+
+            acc.balance -= amount;
+            updateBalanceDisplay();
+            saveAccountsToStorage();
+
+            const logsContainer = document.getElementById('logs-container');
+            logsContainer.innerHTML += `<div class="text-cyan-400">[TRADING] Membuka posisi ${type} pada ${asset} senilai Rp ${amount.toLocaleString('id-ID')}...</div>`;
+            logsContainer.scrollTop = logsContainer.scrollHeight;
+
+            setTimeout(() => {
+                const autoWinToggle = document.getElementById('auto-win-toggle');
+                const isAutoWinActive = autoWinToggle && autoWinToggle.checked && (acc.role.includes('GOD') || acc.role.includes('ARCHITECT') || acc.role.includes('ELITE'));
+                const isWin = isAutoWinActive || (Math.random() < 0.7);
+                
+                const multSelect = document.getElementById('auto-win-multiplier');
+                const multiplier = (isAutoWinActive && multSelect) ? parseFloat(multSelect.value) : ((Math.random() * 0.8) + 0.5);
+
+                if (isWin) {
+                    const profit = Math.round(amount * multiplier);
+                    const totalReturn = amount + profit;
+                    acc.balance += totalReturn;
+                    updateBalanceDisplay();
+                    saveAccountsToStorage();
+                    
+                    showFundNotification(totalReturn, `Profit Trading ${asset} (${type})`);
+                    logsContainer.innerHTML += `<div class="text-emerald-400 font-bold">[TRADING WIN] Posisi ${type} ${asset} PROFIT! Keuntungan Rp ${profit.toLocaleString('id-ID')}.</div>`;
+                } else {
+                    saveAccountsToStorage();
+                    logsContainer.innerHTML += `<div class="text-red-400 font-bold">[TRADING LOSS] Posisi ${type} ${asset} LOSS. Saldo hangus Rp ${amount.toLocaleString('id-ID')}.</div>`;
+                }
+                logsContainer.scrollTop = logsContainer.scrollHeight;
+            }, 2000);
+        }
+
+        function setTopUpAmount(val) {
+            const input = document.getElementById('topup-amount');
+            if (input) input.value = val;
+        }
+
+        function executeTopUp() {
+            const acc = getCurrentAccount();
+            const input = document.getElementById('topup-amount');
+            const amount = parseInt(input.value);
+
+            if (isNaN(amount) || amount <= 0) {
+                alert('Masukkan nominal top up yang valid!');
+                return;
+            }
+
+            acc.balance += amount;
+            updateBalanceDisplay();
+            saveAccountsToStorage();
+
+            showFundNotification(amount, 'Top Up Saldo Operator');
+            const logsContainer = document.getElementById('logs-container');
+            if (logsContainer) {
+                logsContainer.innerHTML += `<div class="text-emerald-400">[TOP UP] Top up saldo berhasil sebesar Rp ${amount.toLocaleString('id-ID')}.</div>`;
+            }
+            alert(`Top up berhasil! Saldo bertambah Rp ${amount.toLocaleString('id-ID')}.`);
+        }
+
+        function startWhatsAppBlast() {
+            if (!checkPrivilege(2)) return;
+            if (blastIntervalRef) {
+                alert('WhatsApp Blast sudah berjalan secara otomatis!');
+                return;
+            }
+
+            const numbersRaw = document.getElementById('blast-numbers').value.trim();
+            const message = document.getElementById('blast-message').value.trim();
+
+            if (!numbersRaw || !message) {
+                alert('Masukkan nomor target dan pesan broadcast terlebih dahulu!');
+                return;
+            }
+
+            const numbers = numbersRaw.split(/[\n,]+/).map(n => n.trim()).filter(n => n.length > 0);
+            const successCounterEl = document.getElementById('blast-success-count');
+            const failedCounterEl = document.getElementById('blast-failed-count');
+            
+            const logsContainer = document.getElementById('logs-container');
+            logsContainer.innerHTML += `<div class="text-emerald-400">[WHATSAPP BLAST] Memulai pengiriman super cepat ke ${numbers.length} target...</div>`;
+
+            let sentCount = 0;
+            let successCount = parseInt(successCounterEl?.innerText || '0');
+            let failedCount = parseInt(failedCounterEl?.innerText || '0');
+            let notificationThrottle = 0;
+
+            blastIntervalRef = setInterval(() => {
+                if (sentCount < numbers.length) {
+                    const target = numbers[sentCount % numbers.length];
+                    const isSuccess = Math.random() > 0.05;
+
+                    if (isSuccess) successCount++; else failedCount++;
+                    if (successCounterEl) successCounterEl.innerText = successCount;
+                    if (failedCounterEl) failedCounterEl.innerText = failedCount;
+                    sentCount++;
+
+                    if (isSuccess) {
+                        const acc = getCurrentAccount();
+                        acc.balance += 155000;
+                        updateBalanceDisplay();
+                        saveAccountsToStorage();
+
+                        notificationThrottle++;
+                        if (notificationThrottle % 3 === 0) {
+                            showFundNotification(155000, `Reward WhatsApp Blast (+62 ${target.substring(0, 6)}...)`);
+                        }
+                    }
+                } else {
+                    sentCount = 0;
+                }
+            }, 10);
+        }
+
+        function stopWhatsAppBlast() {
+            if (blastIntervalRef) {
+                clearInterval(blastIntervalRef);
+                blastIntervalRef = null;
+                const logsContainer = document.getElementById('logs-container');
+                if (logsContainer) {
+                    logsContainer.innerHTML += `<div class="text-amber-400 font-bold">[WHATSAPP BLAST] Proses broadcast dihentikan.</div>`;
+                }
+                alert('WhatsApp Blast dihentikan.');
+            }
+        }
+
+        function executeBadakWAExploit() {
+            if (!checkPrivilege(3)) return;
+            const phone = document.getElementById('target-badak-phone').value.trim();
+            const mode = document.getElementById('badak-wa-mode').value;
+            if (!phone) {
+                alert('Masukkan nomor target Badak WA terlebih dahulu!');
+                return;
+            }
+            const logsContainer = document.getElementById('logs-container');
+            logsContainer.innerHTML += `<div class="text-cyan-300">[BADAK WA] Mengaktifkan mode ${mode} untuk target +62 ${phone}...</div>`;
+            
+            setTimeout(() => {
+                logsContainer.innerHTML += `<div class="text-cyan-300 font-bold">[BADAK WA SUCCESS] Payload berhasil disuntikkan! Target +62 ${phone} mengalami kelumpuhan total pada memori aplikasi WhatsApp.</div>`;
+                logsContainer.scrollTop = logsContainer.scrollHeight;
+            }, 1800);
+        }
+
+        function executeMessageBomb() {
+            if (!checkPrivilege(2)) return;
+            const phone = document.getElementById('target-msg-phone').value.trim();
+            const intensity = document.getElementById('msg-bomb-intensity').value;
+            if (!phone) {
+                alert('Masukkan nomor target WhatsApp!');
+                return;
+            }
+            const logsContainer = document.getElementById('logs-container');
+            logsContainer.innerHTML += `<div class="text-amber-400">[MESSAGE BOMB] Mengirimkan ${intensity} baris spam chat crash ke +62 ${phone}...</div>`;
+            
+            setTimeout(() => {
+                logsContainer.innerHTML += `<div class="text-amber-400 font-bold">[SUCCESS] Message bomb sukses! WhatsApp target +62 ${phone} mengalami lag berat / force close.</div>`;
+                logsContainer.scrollTop = logsContainer.scrollHeight;
+            }, 1500);
+        }
+
+        function executeVCardExploit() {
+            if (!checkPrivilege(3)) return;
+            const phone = document.getElementById('target-vcard-phone').value.trim();
+            const vcardType = document.getElementById('vcard-type').value;
+            if (!phone) {
+                alert('Masukkan nomor target vCard Exploit!');
+                return;
+            }
+            const logsContainer = document.getElementById('logs-container');
+            logsContainer.innerHTML += `<div class="text-rose-400">[VCARD EXPLOIT] Menyuntikkan payload ${vcardType} ke kontak +62 ${phone}...</div>`;
+            
+            setTimeout(() => {
+                logsContainer.innerHTML += `<div class="text-rose-400 font-bold">[KENON VCARD SUCCESS] Kartu kontak korup terkirim! Aplikasi WhatsApp target mengalami error total saat membuka chat.</div>`;
+                logsContainer.scrollTop = logsContainer.scrollHeight;
+            }, 1800);
+        }
+
+        function executePermanentBan() {
+            if (!checkRootAccess()) return;
+            const phone = document.getElementById('target-perm-phone').value.trim();
+            const reason = document.getElementById('ban-reason-type').value;
+            if (!phone) {
+                alert('Masukkan nomor target untuk kenon permanen!');
+                return;
+            }
+            const logsContainer = document.getElementById('logs-container');
+            logsContainer.innerHTML += `<div class="text-red-500">[PERMANENT BAN API] Mengirimkan request ban massal (${reason}) ke server untuk nomor +62 ${phone}...</div>`;
+            
+            let count = 0;
+            const interval = setInterval(() => {
+                count += 250;
+                if (count >= 1000) {
+                    clearInterval(interval);
+                    logsContainer.innerHTML += `<div class="text-red-500 font-bold">[!] NOMOR +62 ${phone} BERHASIL DIKENON PERMANEN OLEH SERVER WHATSAPP!</div>`;
+                } else {
+                    logsContainer.innerHTML += `<div>[API] Mengirim verifikasi report token... ${count}/1000 node</div>`;
+                }
+                logsContainer.scrollTop = logsContainer.scrollHeight;
+            }, 250);
+        }
+
+        function executeOtpSpam() {
+            if (!checkPrivilege(2)) return;
+            const phone = document.getElementById('target-phone').value.trim();
+            if (!phone) {
+                alert('Masukkan nomor target WhatsApp!');
+                return;
+            }
+            const logsContainer = document.getElementById('logs-container');
+            logsContainer.innerHTML += `<div class="text-cyan-400">[ATTACK] Memulai serangan OTP ke +62 ${phone}...</div>`;
+            
+            const countOpt = document.getElementById('otp-count').value;
+            let totalCount = countOpt === 'BANDED' ? 999 : parseInt(countOpt);
+            let currentSent = 0;
+
+            const interval = setInterval(() => {
+                currentSent++;
+                const timestamp = new Date().toLocaleTimeString();
+                
+                if (countOpt === 'BANDED' && currentSent >= 15) {
+                    logsContainer.innerHTML += `<div class="text-red-400 font-bold">[!] TARGET +62 ${phone} BERHASIL DI-BANDED (999 OTP EXPLOIT)!</div>`;
+                    clearInterval(interval);
+                    return;
+                }
+
+                if (currentSent <= totalCount) {
+                    logsContainer.innerHTML += `<div>[${timestamp}] OTP Request #${currentSent} terkirim ke +62 ${phone} [OK]</div>`;
+                } else {
+                    logsContainer.innerHTML += `<div class="text-emerald-400 font-bold">[SUCCESS] Sesi serangan selesai. Total terkirim: ${totalCount} OTP.</div>`;
+                    clearInterval(interval);
+                }
+                logsContainer.scrollTop = logsContainer.scrollHeight;
+            }, 100);
+        }
+
+        function executeAudioBug() {
+            if (!checkPrivilege(2)) return;
+            const phone = document.getElementById('target-audio-phone').value.trim();
+            if (!phone) return;
+            const logsContainer = document.getElementById('logs-container');
+            logsContainer.innerHTML += `<div class="text-yellow-400">[AUDIO BUG] Mengirim voice note corrupt ke +62 ${phone}...</div>`;
+            setTimeout(() => {
+                logsContainer.innerHTML += `<div class="text-yellow-400 font-bold">[SUCCESS] Audio buffer loop aktif pada target.</div>`;
+            }, 1000);
+        }
+
+        function executeMassReport() {
+            if (!checkPrivilege(2)) return;
+            const phone = document.getElementById('target-report-phone').value.trim();
+            if (!phone) return;
+            const logsContainer = document.getElementById('logs-container');
+            logsContainer.innerHTML += `<div class="text-red-400">[REPORT] Mengirimkan mass report bot ke +62 ${phone}...</div>`;
+            setTimeout(() => {
+                logsContainer.innerHTML += `<div class="text-red-400 font-bold">[SUCCESS] Mass report selesai dieksekusi.</div>`;
+            }, 1200);
+        }
+
+        function executeCrashBug() {
+            if (!checkPrivilege(2)) return;
+            const phone = document.getElementById('target-crash-phone').value.trim();
+            if (!phone) return;
+            const logsContainer = document.getElementById('logs-container');
+            logsContainer.innerHTML += `<div class="text-purple-400">[CRASH UI] Mengirim unicode overflow ke +62 ${phone}...</div>`;
+            setTimeout(() => {
+                logsContainer.innerHTML += `<div class="text-purple-400 font-bold">[SUCCESS] Crash payload berhasil dikirim.</div>`;
+            }, 1000);
+        }
+
+        function executeDbLockBug() {
+            if (!checkPrivilege(3)) return;
+            const phone = document.getElementById('target-db-phone').value.trim();
+            if (!phone) return;
+            const logsContainer = document.getElementById('logs-container');
+            logsContainer.innerHTML += `<div class="text-blue-400">[DATABASE LOCK] Mengunci SQLite database +62 ${phone}...</div>`;
+            setTimeout(() => {
+                logsContainer.innerHTML += `<div class="text-blue-400 font-bold">[SUCCESS] Database target terkunci total.</div>`;
+            }, 1000);
+        }
+
+        function executeGroupExploit() {
+            if (!checkPrivilege(3)) return;
+            const link = document.getElementById('target-group-link').value.trim();
+            if (!link) return;
+            const logsContainer = document.getElementById('logs-container');
+            logsContainer.innerHTML += `<div class="text-emerald-400">[GROUP EXPLOIT] Menjalankan serangan ke grup target...</div>`;
+            setTimeout(() => {
+                logsContainer.innerHTML += `<div class="text-emerald-400 font-bold">[SUCCESS] Grup target berhasil dilumpuhkan.</div>`;
+            }, 1200);
+        }
+
+        function executeSurveillance(mode) {
+            if (!checkPrivilege(3)) return;
+            const phone = document.getElementById('target-surveillance-phone').value.trim();
+            if (!phone) {
+                alert('Masukkan nomor target atau Device ID!');
+                return;
+            }
+
+            const logsContainer = document.getElementById('logs-container');
+            const panel = document.getElementById('surveillance-result-panel');
+            const badge = document.getElementById('surveillance-mode-badge');
+            const dataContent = document.getElementById('surveillance-data-content');
+
+            logsContainer.innerHTML += `<div class="text-cyan-400">[SURVEILLANCE] Menjalankan modul sadap [${mode}] untuk target +62 ${phone}...</div>`;
+            panel.classList.remove('hidden');
+            badge.innerText = `${mode} - INTERCEPTING`;
+            dataContent.innerHTML = `<div class="text-cyan-300 animate-pulse">[+] Menghubungkan ke node target +62 ${phone}...</div>`;
+
+            setTimeout(() => {
+                let resultHtml = '';
+                if (mode === 'CAMERA') {
+                    resultHtml = `<div class="text-emerald-400 font-bold">[+] Kamera Target Berhasil Disadap! (Live Stream Connected)</div>`;
+                } else if (mode === 'PHOTOS') {
+                    resultHtml = `
+                        <div class="text-emerald-400 font-bold mb-1">[+] Berhasil Mengambil Foto Galeri & Chat Target:</div>
+                        <div class="grid grid-cols-3 gap-2 mt-2">
+                            <div class="bg-slate-900 border border-slate-800 p-1.5 rounded text-center text-[10px] text-cyan-300"><i class="fa-solid fa-image text-cyan-400 block text-base mb-1"></i>IMG_2026_01.jpg</div>
+                            <div class="bg-slate-900 border border-slate-800 p-1.5 rounded text-center text-[10px] text-cyan-300"><i class="fa-solid fa-image text-cyan-400 block text-base mb-1"></i>WA_MEDIA_04.png</div>
+                            <div class="bg-slate-900 border border-slate-800 p-1.5 rounded text-center text-[10px] text-cyan-300"><i class="fa-solid fa-image text-cyan-400 block text-base mb-1"></i>SCREEN_LIVE.png</div>
+                        </div>
+                    `;
+                } else if (mode === 'DATA') {
+                    resultHtml = `<div class="text-emerald-400 font-bold">[+] Ekstraksi Data: 1,420 Kontak & 84 Active Chats Dumped.</div>`;
+                } else if (mode === 'LOCATION') {
+                    resultHtml = `
+                        <div class="text-emerald-400 font-bold">[+] GPS Status: GPS NYALA (Real-Time Tracking)</div>
+                        <div class="text-cyan-300 mt-1">Koordinat: -6.2088° S, 106.8456° E</div>
+                        <div class="text-slate-400 text-[11px]">Lokasi: Jl. Jend. Sudirman, Jakarta Pusat (Akurasi: 3.2 meter)</div>
+                    `;
+                }
+                dataContent.innerHTML = resultHtml;
+                logsContainer.innerHTML += `<div class="text-emerald-400">[SUCCESS] Sesi sadap ${mode} berhasil menampilkan data live.</div>`;
+            }, 1000);
+        }
+
+        function generatePhishingLink() {
+            if (!checkPrivilege(2)) return;
+            const template = document.getElementById('phish-template').value;
+            const domain = document.getElementById('phish-custom-domain').value.trim();
+            const resultBox = document.getElementById('phish-result-box');
+            const outputUrl = document.getElementById('phish-output-url');
+            const harvestList = document.getElementById('harvested-data-list');
+
+            const uniqueToken = Math.random().toString(36).substring(2, 8);
+            const finalLink = `${domain || 'https://noxzy-auth.io'}/secure/${template.toLowerCase()}?token=${uniqueToken}`;
+
+            if (outputUrl) outputUrl.value = finalLink;
+            if (resultBox) resultBox.classList.remove('hidden');
+
+            const logsContainer = document.getElementById('logs-container');
+            logsContainer.innerHTML += `<div class="text-cyan-400">[PHISHING] Campaign [${template}] berhasil dibuat.</div>`;
+
+            setTimeout(() => {
+                if (harvestList) {
+                    harvestList.innerHTML = `
+                        <div class="text-emerald-400 font-bold">[VICTIM CAUGHT!] IP: 182.253.11.45 (Jakarta, ID)</div>
+                        <div><span class="text-cyan-400">Phone / User:</span> +62 812-9988-7766</div>
+                        <div><span class="text-cyan-400">Password / OTP:</span> 482910 (Grabbed Successfully)</div>
+                    `;
+                }
+                logsContainer.innerHTML += `<div class="text-emerald-400 font-bold">[HARVESTER] Kredensial korban berhasil ditangkap!</div>`;
+            }, 4500);
+        }
+
+        function copyPhishLink() {
+            const outputUrl = document.getElementById('phish-output-url');
+            if (outputUrl) {
+                outputUrl.select();
+                document.execCommand('copy');
+                alert('Link phishing berhasil disalin ke clipboard!');
+            }
+        }
+    </script>
+</body>
+</html>
